@@ -8,16 +8,17 @@ BOARD_WIDTH = 400;
 BOARD_HEIGHT = BOARD_WIDTH;
 BOARD_UNIT = BOARD_WIDTH / X_LINES;
 
+IS_WHITE_TURN = true;
+
 function main(){
-  console.log("start");
   init();
 
-   window.onclick = function(e){
-        var cx = Math.floor(e.clientX/BOARD_UNIT) ;
-        var cy = Math.floor(e.clientY/BOARD_UNIT) ;
-        setStone(cx,cy,false);
-        console.log(cx,cy);
-    }
+  window.onclick = function(e){
+    var cx = Math.floor(e.clientX/BOARD_UNIT) ;
+    var cy = Math.floor(e.clientY/BOARD_UNIT) ;
+    setStone(cx,cy,IS_WHITE_TURN);
+    IS_WHITE_TURN = !IS_WHITE_TURN;
+  }
 }
 
 function init(){
@@ -42,24 +43,21 @@ function initBoard() {
   ctx.stroke();
 }
 
-function setStone(x,y,dir){
-	console.log("sS_ok");
-	if(dir){
-        ctx.beginPath();
-        ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
-        ctx.closePath();
-        ctx.fill();
-    }
-    else{
-        ctx.beginPath();
-        ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
-        ctx.stroke();
+function setStone(x,y,isWhite){
+  drawStone(x,y,isWhite);
+}
 
-        ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),7,Math.PI*2,false);
-        ctx.fillStyle = "white";
-        ctx.fill();
-        ctx.closePath();
-    }
+function drawStone(x,y,isWhite) {
+  ctx.beginPath();
+  ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
+  ctx.stroke();
+  if(isWhite){
+    ctx.fillStyle = "white";
+  } else {
+    ctx.fillStyle = "black";
+  }
+  ctx.fill();
+  ctx.closePath();
 }
 
 function getStone(){
