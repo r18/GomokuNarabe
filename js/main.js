@@ -10,7 +10,7 @@ BOARD_UNIT = BOARD_WIDTH / X_LINES;
 Color_Flg=true; //trueなら黒,falseなら白
 Win_Flg=true;
 Stone_Color=[];
-Stone_Num=0;  
+//Stone_Num=0;  
 
 function main(){
   console.log("start");
@@ -31,7 +31,6 @@ function init(){
       }else{
         var cx = Math.floor(e.clientX/BOARD_UNIT)+1;
       }
-
       if (e.clientY%BOARD_UNIT<=BOARD_UNIT/2){
         var cy = Math.floor(e.clientY/BOARD_UNIT);
       }else{
@@ -59,62 +58,56 @@ function setStone(x,y,dir){
   if(Win_Flg){
     if(x<=9 && y<=9 && Stone_Color[10*x+y]!="Black" && Stone_Color[10*x+y]!="White"){
       if(dir){
-          ctx.beginPath();
-          ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
-          ctx.closePath();
           ctx.fillStyle="black";
-          ctx.fill();
           Color_Flg=false;
           Stone_Color[10*x+y]="Black";
         }
-
       else{
-        ctx.beginPath();
-        ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
-        ctx.closePath();
         ctx.fillStyle="white";
-        ctx.fill();
         Color_Flg=true;
         Stone_Color[10*x+y]="White";
       }
-      Check(x,y);
+       ctx.beginPath();
+      ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
+      ctx.closePath();
+      ctx.fill();
+      check(x,y);
     }
   }
 }
     
-function Check(x,y){
-  Check_Horizontal(y);
-  Check_Vertical(x);
-  Check_Diagonal(x,y);
+function check(x,y){
+  checkHorizontal(y);
+  checkVertical(x);
+  checkDiagonal(x,y);
 }
 
-function Check_Horizontal(y){
- for(var i=1;i<=9;i++){
-    Check_Stone_Num(i,y);
-  }
-  Stone_Num=0;
-}
-
-function Check_Vertical(x){
+function checkHorizontal(y){
+  var Stone_Num=0;
   for(var i=1;i<=9;i++){
-    Check_Stone_Num(x,i);
+    checkStoneNum(i,y);
   }
-  Stone_Num=0;
 }
 
-function Check_Diagonal(x,y){
+function checkVertical(x){
+  var Stone_Num=0;
   for(var i=1;i<=9;i++){
-    Check_Stone_Num(i,x+y-i);
+    checkStoneNum(x,i);
   }
-  Stone_Num=0;
-
-  for(var i=1;i<=9;i++){
-    Check_Stone_Num(i,y-x+i);
-  }
-  Stone_Num=0;
 }
 
-function Check_Stone_Num(x,y){
+function checkDiagonal(x,y){
+  var Stone_Num=0;
+  for(var i=1;i<=9;i++){
+    checkStoneNum(i,x+y-i);
+  }
+  Stone_Num=0;
+  for(var i=1;i<=9;i++){
+    checkStoneNum(i,y-x+i);
+  }
+}
+
+function checkStoneNum(x,y){
   if(!Color_Flg){
     if(Stone_Color[10*x+y]=="Black"){
       Stone_Num++;
@@ -132,8 +125,9 @@ function Check_Stone_Num(x,y){
     }
   }
   if(Stone_Num==5){
-    console.log(Stone_Color[10*x+y]+" WIN")
+    alert(Stone_Color[10*x+y]+" WIN")
     Win_Flg=false;
   }
+  return Stone_Num
 }
 
