@@ -10,7 +10,6 @@ BOARD_UNIT = BOARD_WIDTH / X_LINES;
 Color_Flg=true; //trueなら黒,falseなら白
 Win_Flg=true;
 Stone_Color=[];
-//Stone_Num=0;  
 
 function main(){
   console.log("start");
@@ -83,25 +82,25 @@ function check(x,y){
 }
 
 function checkHorizontal(y){
-  var Stone_Num=0;
+  //var Stone_Num=0;
   for(var i=1;i<=9;i++){
     checkStoneNum(i,y);
   }
 }
 
 function checkVertical(x){
-  var Stone_Num=0;
+  //var Stone_Num=0;
   for(var i=1;i<=9;i++){
     checkStoneNum(x,i);
   }
 }
 
 function checkDiagonal(x,y){
-  var Stone_Num=0;
+  //var Stone_Num=0;
   for(var i=1;i<=9;i++){
     checkStoneNum(i,x+y-i);
   }
-  Stone_Num=0;
+ // Stone_Num=0;
   for(var i=1;i<=9;i++){
     checkStoneNum(i,y-x+i);
   }
@@ -128,6 +127,5 @@ function checkStoneNum(x,y){
     alert(Stone_Color[10*x+y]+" WIN")
     Win_Flg=false;
   }
-  return Stone_Num
 }
 
