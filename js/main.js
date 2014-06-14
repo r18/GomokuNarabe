@@ -9,24 +9,25 @@ BOARD_HEIGHT = BOARD_WIDTH;
 BOARD_UNIT = BOARD_WIDTH / X_LINES;
 
 IS_WHITE_TURN = true;
+WIN_FLG=true;
 
 BOARD = [];
 /*
- *  1 -> WHITE
- *  -1 -> BLACK
- *
- */
+* 1 -> WHITE
+* -1 -> BLACK
+*
+*/
 
 function main(){
   init();
 
-  window.onclick = function(e){
-    var cx = Math.floor(e.clientX/BOARD_UNIT) ;
-    var cy = Math.floor(e.clientY/BOARD_UNIT) ;
-    if (setStone(cx,cy,IS_WHITE_TURN)) {
-      IS_WHITE_TURN = !IS_WHITE_TURN;
+    window.onclick = function(e){
+      var cx = Math.floor(e.clientX/BOARD_UNIT) ;
+      var cy = Math.floor(e.clientY/BOARD_UNIT) ;
+      if (setStone(cx,cy,IS_WHITE_TURN)) {
+        IS_WHITE_TURN = !IS_WHITE_TURN;
+      }
     }
-  }
 }
 
 function init(){
@@ -60,13 +61,17 @@ function initBoard() {
 }
 
 function setStone(x,y,isWhite){
-  if(BOARD[y][x] == 0){
-    BOARD[y][x] = isWhite ? 1 : -1;
-    drawStone(x,y,isWhite);
-    return true;
-  } else {
-    console.log("there is the stone");
-    return false;
+  if(WIN_FLG){
+    if(BOARD[y][x] == 0 ){
+      BOARD[y][x] = isWhite ? 1 : -1;
+      drawStone(x,y,isWhite);
+      check(x,y);
+
+      return true;
+    } else {
+      console.log("there is the stone");
+      return false;
+    }
   }
 }
 
@@ -81,16 +86,38 @@ function drawStone(x,y,isWhite) {
   }
   ctx.fill();
   ctx.closePath();
+  }
+
+function check(x,y){
+  checkStone(x,y,1,0);
+  checkStone(x,y,0,1);
+  checkStone(x,y,1,1);
+  checkStone(x,y,-1,1);
 }
 
-function getStone(){
+function checkStone(x,y,i,k){
+  var UP_FLG = true;
+  var DOWN_FLG=true;
+  var STONE_COUNT=1;
+  var INCRIMENT=1;
 
-}
-
-function drawBoard(){
-
-}
-
-function check(){
-
+  while(UP_FLG || DOWN_FLG){
+    if(UP_FLG && BOARD[y][x] == BOARD[y+i*INCRIMENT][x+k*INCRIMENT]){
+      STONE_COUNT++;
+    }
+    else{
+      UP_FLG=false;
+    }
+    if (DOWN_FLG && BOARD[y][x] == BOARD[y-i*INCRIMENT][x-k*INCRIMENT]) {
+      STONE_COUNT++;
+    }
+    else{
+      DOWN_FLG = false;
+    }
+    INCRIMENT++;
+  }
+  if (STONE_COUNT>=5){
+    alert("win");
+    WIN_FLG = false;
+  }
 }
