@@ -93,23 +93,23 @@ function check(x,y){
   checkStone(x,y,-1,1);
 }
 
-function checkStone(x,y,xIncrement,yIncrement){
-  var stoneCount=1,
-      checkX=x+xIncrement,
-      checkY=y+yIncrement;
+function checkStone(x,y,stepX,stepY){
+  var stoneCount = 1,
+      nX = x + stepX,
+      nY = y + stepY;
 
-  while(BOARD[y][x] == BOARD[checkY][checkX]){
-    checkX+=xIncrement;
-    checkY+=yIncrement;
+  while(BOARD[nY][nX] == BOARD[y][x]){
+    nX += stepX;
+    nY += stepY;
     stoneCount++;
   }
 
-  checkX=x-xIncrement;
-  checkY=y-yIncrement;
+  nX = x - stepX;
+  nY = y - stepY;
 
-  while(BOARD[y][x] == BOARD[checkY][checkX]){
-    checkX-=xIncrement;
-    checkY-=yIncrement;
+  while(BOARD[nY][nX] == BOARD[y][x]){
+    nX -= stepX;
+    nY -= stepY;
     stoneCount++;
   }
 
