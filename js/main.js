@@ -7,9 +7,8 @@ BOARD_OFFSET_Y = 30;
 BOARD_WIDTH = 400;
 BOARD_HEIGHT = BOARD_WIDTH;
 BOARD_UNIT = BOARD_WIDTH / X_LINES;
-
 IS_WHITE_TURN = true;
-WIN_FLG=true;
+IS_GAME_END=false;
 
 BOARD = [];
 /*
@@ -61,12 +60,11 @@ function initBoard() {
 }
 
 function setStone(x,y,isWhite){
-  if(WIN_FLG){
+  if(!IS_GAME_END){
     if(BOARD[y][x] == 0 ){
       BOARD[y][x] = isWhite ? 1 : -1;
       drawStone(x,y,isWhite);
       check(x,y);
-
       return true;
     } else {
       console.log("there is the stone");
@@ -89,35 +87,34 @@ function drawStone(x,y,isWhite) {
   }
 
 function check(x,y){
-  checkStone(x,y,1,0);
+  checkStone(x,y,1,0);  
   checkStone(x,y,0,1);
   checkStone(x,y,1,1);
   checkStone(x,y,-1,1);
 }
 
-function checkStone(x,y,i,k){
-  var UP_FLG = true;
-  var DOWN_FLG=true;
-  var STONE_COUNT=1;
-  var INCRIMENT=1;
+function checkStone(x,y,xIncrement,yIncrement){
+  var stoneCount=1,
+      checkX=x+xIncrement,
+      checkY=y+yIncrement;
 
-  while(UP_FLG || DOWN_FLG){
-    if(UP_FLG && BOARD[y][x] == BOARD[y+i*INCRIMENT][x+k*INCRIMENT]){
-      STONE_COUNT++;
-    }
-    else{
-      UP_FLG=false;
-    }
-    if (DOWN_FLG && BOARD[y][x] == BOARD[y-i*INCRIMENT][x-k*INCRIMENT]) {
-      STONE_COUNT++;
-    }
-    else{
-      DOWN_FLG = false;
-    }
-    INCRIMENT++;
+  while(BOARD[y][x] == BOARD[checkY][checkX]){
+    checkX+=xIncrement;
+    checkY+=yIncrement;
+    stoneCount++;
   }
-  if (STONE_COUNT>=5){
+
+  checkX=x-xIncrement;
+  checkY=y-yIncrement;
+
+  while(BOARD[y][x] == BOARD[checkY][checkX]){
+    checkX-=xIncrement;
+    checkY-=yIncrement;
+    stoneCount++;
+  }
+
+  if (stoneCount>=5){
     alert("win");
-    WIN_FLG = false;
+    IS_GAME_END = true;
   }
 }
