@@ -50,9 +50,9 @@ function initBoard() {
   }
   ctx.stroke();
 
-  for(var y = 0; y < Y_LINES; y++){
+  for(var y = 0; y <= Y_LINES; y++){
     var r = [];
-    for(var x = 0; x < X_LINES; x++){
+    for(var x = 0; x <= X_LINES; x++){
       r.push(0);
     }
     BOARD.push(r);
@@ -61,8 +61,8 @@ function initBoard() {
 
 function setStone(x,y,isWhite){
   if(!IS_GAME_END){
-    if(BOARD[y][x] == 0 ){
-      BOARD[y][x] = isWhite ? 1 : -1;
+    if(BOARD[y-1][x-1] == 0 ){
+      BOARD[y-1][x-1] = isWhite ? 1 : -1;
       drawStone(x,y,isWhite);
       check(x,y);
       return true;
@@ -75,7 +75,7 @@ function setStone(x,y,isWhite){
 
 function drawStone(x,y,isWhite) {
   ctx.beginPath();
-  ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
+  ctx.arc(BOARD_OFFSET_X+BOARD_UNIT*(x-1),BOARD_OFFSET_Y+BOARD_UNIT*(y-1),10,Math.PI*2,false);
   ctx.stroke();
   if(isWhite){
     ctx.fillStyle = "white";
@@ -98,7 +98,7 @@ function checkStone(x,y,stepX,stepY){
       nX = x + stepX,
       nY = y + stepY;
 
-  while(BOARD[nY][nX] == BOARD[y][x]){
+  while(BOARD[nY-1][nX-1] == BOARD[y][x]){
     nX += stepX;
     nY += stepY;
     stoneCount++;
@@ -107,13 +107,13 @@ function checkStone(x,y,stepX,stepY){
   nX = x - stepX;
   nY = y - stepY;
 
-  while(BOARD[nY][nX] == BOARD[y][x]){
+  while(BOARD[nY-1][nX-1] == BOARD[y][x]){
     nX -= stepX;
     nY -= stepY;
     stoneCount++;
   }
 
-  if (stoneCount>=5){
+  if (stoneCount==5){
     alert("win");
     IS_GAME_END = true;
   }
