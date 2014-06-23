@@ -1,7 +1,7 @@
 WIDTH = 640;
 HEIGHT = 480;
-X_LINES = 14;
-Y_LINES = 14;
+X_LINES = 19;
+Y_LINES = 19;
 BOARD_OFFSET_X = 30;
 BOARD_OFFSET_Y = 30;
 BOARD_WIDTH = 400;
@@ -21,8 +21,8 @@ function main(){
   init();
 
     window.onclick = function(e){
-      var cx = Math.floor(e.clientX/BOARD_UNIT) ;
-      var cy = Math.floor(e.clientY/BOARD_UNIT) ;
+      var cx = Math.floor((e.clientX-BOARD_OFFSET_X)/BOARD_UNIT) ;
+      var cy = Math.floor((e.clientY-BOARD_OFFSET_Y)/BOARD_UNIT) ;
       if (setStone(cx,cy,IS_WHITE_TURN)) {
         IS_WHITE_TURN = !IS_WHITE_TURN;
       }
