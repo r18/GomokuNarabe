@@ -52,12 +52,12 @@ function init(){
   cvs.width = WIDTH;
   cvs.height = HEIGHT;
   ctx = cvs.getContext('2d');
+  ctx.translate(BOARD_OFFSET_X,BOARD_OFFSET_Y);
   initBoard();
 }
 
 function initBoard() {
   ctx.clearRect(0,0,WIDTH,HEIGHT);
-  ctx.translate(BOARD_OFFSET_X,BOARD_OFFSET_Y);
   ctx.beginPath();
   for(var i = 0; i< Y_LINES; i++){
     ctx.moveTo(i*BOARD_UNIT,0);
@@ -68,7 +68,6 @@ function initBoard() {
     ctx.lineTo(BOARD_WIDTH - BOARD_UNIT,i*BOARD_UNIT);
   }
   ctx.stroke();
-  ctx.translate(-BOARD_OFFSET_X,-BOARD_OFFSET_Y);
 
   for(var y = 0; y < Y_LINES; y++){
     var r = [];
@@ -97,7 +96,7 @@ function setStone(x,y,isWhite){
 
 function drawStone(x,y,isWhite) {
   ctx.beginPath();
-  ctx.arc(BOARD_OFFSET_X+BOARD_UNIT*x,BOARD_OFFSET_Y+BOARD_UNIT*y,10,Math.PI*2,false);
+  ctx.arc(BOARD_UNIT*x,BOARD_UNIT*y,10,Math.PI*2,false);
   ctx.stroke();
   if(isWhite){
     ctx.fillStyle = "white";
@@ -144,6 +143,7 @@ function checkStone(x,y,stepX,stepY){
 function newGame(){
   BOARD.length = 0;
   initBoard();
+  IS_GAME_END=false;
 }
 function backUp(x,y){
   var r=[];
@@ -159,8 +159,9 @@ function back(){
   BOARD[y][x] = 0;
   BACKUP.pop();
   IS_WHITE_TURN = !IS_WHITE_TURN;
+  IS_GAME_END = false;
  
-  ctx.translate(BOARD_OFFSET_X+BOARD_UNIT*x,BOARD_OFFSET_Y+BOARD_UNIT*y);
+  ctx.translate(BOARD_UNIT*x,BOARD_UNIT*y);
   ctx.clearRect(-BOARD_UNIT/2,-BOARD_UNIT/2,BOARD_UNIT,BOARD_UNIT);
   ctx.beginPath();
  
@@ -172,5 +173,5 @@ function back(){
  
   ctx.closePath()
   ctx.stroke();
-  ctx.translate(-(BOARD_OFFSET_X+BOARD_UNIT*x),-(BOARD_OFFSET_Y+BOARD_UNIT*y));
+  ctx.translate(-BOARD_UNIT*x,-BOARD_UNIT*y);
 }
