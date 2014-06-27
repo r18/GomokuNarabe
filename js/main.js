@@ -36,7 +36,7 @@ function main(){
       console.log(e.keyCode);
       switch(e.keyCode){
         case 66:　  //Bをおした時一つ戻る
-          if (BACKUP_COUNT !=0)back();
+          if (BACKUP_COUNT != 0)back();
           break;
         case 78:　 //Nをおした時ニューゲーム
           newGame();
@@ -53,23 +53,23 @@ function init(){
   cvs.height = HEIGHT;
   ctx = cvs.getContext('2d');
   initBoard();
-  boardArray();
 }
 
 function initBoard() {
   ctx.clearRect(0,0,WIDTH,HEIGHT);
+  ctx.translate(BOARD_OFFSET_X,BOARD_OFFSET_Y);
   ctx.beginPath();
   for(var i = 0; i< Y_LINES; i++){
-    ctx.moveTo(BOARD_OFFSET_X+i*BOARD_UNIT,BOARD_OFFSET_Y);
-    ctx.lineTo(BOARD_OFFSET_X+i*BOARD_UNIT,BOARD_OFFSET_Y+BOARD_HEIGHT-BOARD_UNIT);
+    ctx.moveTo(i*BOARD_UNIT,0);
+    ctx.lineTo(i*BOARD_UNIT, BOARD_HEIGHT-BOARD_UNIT);
   }
   for(var i = 0; i< X_LINES; i++){
-    ctx.moveTo(BOARD_OFFSET_X,BOARD_OFFSET_Y+i*BOARD_UNIT);
-    ctx.lineTo(BOARD_OFFSET_X+BOARD_WIDTH-BOARD_UNIT,BOARD_OFFSET_Y+i*BOARD_UNIT);
+    ctx.moveTo(0,i*BOARD_UNIT);
+    ctx.lineTo(BOARD_WIDTH - BOARD_UNIT,i*BOARD_UNIT);
   }
   ctx.stroke();
-}
-function boardArray(){
+  ctx.translate(-BOARD_OFFSET_X,-BOARD_OFFSET_Y);
+
   for(var y = 0; y < Y_LINES; y++){
     var r = [];
     for(var x = 0; x < X_LINES; x++){
@@ -144,13 +144,12 @@ function checkStone(x,y,stepX,stepY){
 function newGame(){
   BOARD.length = 0;
   initBoard();
-  boardArray();
 }
 function backUp(x,y){
-  r=[];
+  var r=[];
   r.push(x,y);
   BACKUP.push(r);
-  BACKUP_COUNT++
+  BACKUP_COUNT++;
 }
 
 function back(){
@@ -160,21 +159,18 @@ function back(){
   BOARD[y][x] = 0;
   BACKUP.pop();
   IS_WHITE_TURN = !IS_WHITE_TURN;
-  initBoard();
+ 
+  ctx.translate(BOARD_OFFSET_X+BOARD_UNIT*x,BOARD_OFFSET_Y+BOARD_UNIT*y);
+  ctx.clearRect(-BOARD_UNIT/2,-BOARD_UNIT/2,BOARD_UNIT,BOARD_UNIT);
+  ctx.beginPath();
+ 
+  ctx.moveTo(-BOARD_UNIT/2,0);
+  ctx.lineTo(BOARD_UNIT/2,0);
 
- for(var i =0; i<BACKUP_COUNT; i++){
-    var x = BACKUP[i][0];
-    var y = BACKUP[i][1];
-
-    switch(BOARD[y][x]){
-      case 1:
-        drawStone(x,y,true);
-        break;
-      case -1:
-        drawStone(x,y,false);
-        break;
-      default:
-        break;
-    }
-  } 
+  ctx.moveTo(0,-BOARD_UNIT/2);
+  ctx.lineTo(0,BOARD_UNIT/2);
+ 
+  ctx.closePath()
+  ctx.stroke();
+  ctx.translate(-(BOARD_OFFSET_X+BOARD_UNIT*x),-(BOARD_OFFSET_Y+BOARD_UNIT*y));
 }
