@@ -35,8 +35,8 @@ function main(){
     window.onkeydown = function(e){
       console.log(e.keyCode);
       switch(e.keyCode){
-        case 66:　  //Bをおした時一つ戻る
-          if (BACKUP_COUNT != 0)back();
+        case 66:　 //Bをおした時一つ戻る
+          back();
           break;
         case 78:　 //Nをおした時ニューゲーム
           newGame();
@@ -48,34 +48,46 @@ function main(){
 }
 
 function init(){
-  cvs = document.getElementById('cvs');
-  cvs.width = WIDTH;
-  cvs.height = HEIGHT;
-  ctx = cvs.getContext('2d');
-  ctx.translate(BOARD_OFFSET_X,BOARD_OFFSET_Y);
+
+  cvs = document.getElementById("cvsBoard");
+  cvsBoard.width = WIDTH;
+  cvsBoard.height = HEIGHT;
+  ctxBoard = cvsBoard.getContext("2d");
+
+  cvsStone = document.getElementById('cvsStone');
+  cvsStone.width = WIDTH;
+  cvsStone.height = HEIGHT;
+  ctxStone = cvsStone.getContext('2d');
+  ctxStone.shadowColor="white";
+  
+  ctxBoard.translate(BOARD_OFFSET_X,BOARD_OFFSET_Y);
+  ctxStone.translate(BOARD_OFFSET_X,BOARD_OFFSET_Y);
+
   initBoard();
+  
 }
 
 function initBoard() {
-  ctx.clearRect(0,0,WIDTH,HEIGHT);
-  ctx.beginPath();
+  ctxBoard.clearRect(0,0,WIDTH,HEIGHT);
+  ctxBoard.beginPath();
   for(var i = 0; i< Y_LINES; i++){
-    ctx.moveTo(i*BOARD_UNIT,0);
-    ctx.lineTo(i*BOARD_UNIT, BOARD_HEIGHT-BOARD_UNIT);
+    ctxBoard.moveTo(i*BOARD_UNIT,0);
+    ctxBoard.lineTo(i*BOARD_UNIT, BOARD_HEIGHT-BOARD_UNIT);
   }
   for(var i = 0; i< X_LINES; i++){
-    ctx.moveTo(0,i*BOARD_UNIT);
-    ctx.lineTo(BOARD_WIDTH - BOARD_UNIT,i*BOARD_UNIT);
+    ctxBoard.moveTo(0,i*BOARD_UNIT);
+    ctxBoard.lineTo(BOARD_WIDTH - BOARD_UNIT,i*BOARD_UNIT);
   }
-  ctx.stroke();
+  ctxBoard.stroke();
 
-  for(var y = 0; y < Y_LINES; y++){
+   for(var y = 0; y < Y_LINES; y++){
     var r = [];
     for(var x = 0; x < X_LINES; x++){
       r.push(0);
     }
     BOARD.push(r);
   }
+ 
 }
 
 function setStone(x,y,isWhite){
@@ -95,20 +107,21 @@ function setStone(x,y,isWhite){
 }
 
 function drawStone(x,y,isWhite) {
-  ctx.beginPath();
-  ctx.arc(BOARD_UNIT*x,BOARD_UNIT*y,10,Math.PI*2,false);
-  ctx.stroke();
+  ctxStone.beginPath();
+  ctxStone.arc(BOARD_UNIT*x,BOARD_UNIT*y,10,Math.PI*2,false);
+  ctxStone.stroke();
   if(isWhite){
-    ctx.fillStyle = "white";
+    ctxStone.fillStyle = "white";
   } else {
-    ctx.fillStyle = "black";
+    ctxStone.fillStyle = "black";
   }
-  ctx.fill();
-  ctx.closePath();
-  }
+  ctxStone.fill();
+  ctxStone.closePath();
+  
+}
 
 function check(x,y){
-  checkStone(x,y,1,0);  
+  checkStone(x,y,1,0);
   checkStone(x,y,0,1);
   checkStone(x,y,1,1);
   checkStone(x,y,-1,1);
@@ -143,6 +156,8 @@ function checkStone(x,y,stepX,stepY){
 function newGame(){
   BOARD.length = 0;
   initBoard();
+  ctxStone.clearRect(-30,-30,BOARD_WIDTH,BOARD_HEIGHT)
+  IS_WHITE_TURN = true;
   IS_GAME_END=false;
 }
 function backUp(x,y){
@@ -153,25 +168,14 @@ function backUp(x,y){
 }
 
 function back(){
-  BACKUP_COUNT--;
-  var x = BACKUP[BACKUP_COUNT][0],
-      y = BACKUP[BACKUP_COUNT][1];
-  BOARD[y][x] = 0;
-  BACKUP.pop();
-  IS_WHITE_TURN = !IS_WHITE_TURN;
-  IS_GAME_END = false;
- 
-  ctx.translate(BOARD_UNIT*x,BOARD_UNIT*y);
-  ctx.clearRect(-BOARD_UNIT/2,-BOARD_UNIT/2,BOARD_UNIT,BOARD_UNIT);
-  ctx.beginPath();
- 
-  ctx.moveTo(-BOARD_UNIT/2,0);
-  ctx.lineTo(BOARD_UNIT/2,0);
-
-  ctx.moveTo(0,-BOARD_UNIT/2);
-  ctx.lineTo(0,BOARD_UNIT/2);
- 
-  ctx.closePath()
-  ctx.stroke();
-  ctx.translate(-BOARD_UNIT*x,-BOARD_UNIT*y);
+  if(BACKUP_COUNT > 0){
+    BACKUP_COUNT--;
+    var x = BACKUP[BACKUP_COUNT][0],
+        y = BACKUP[BACKUP_COUNT][1];
+    BOARD[y][x] = 0;
+    BACKUP.pop();
+    IS_WHITE_TURN = !IS_WHITE_TURN;
+    IS_GAME_END = false;
+    ctxStone.clearRect(BOARD_UNIT*(x-1/2),BOARD_UNIT*(y-1/2),BOARD_UNIT,BOARD_UNIT);
+  }
 }
