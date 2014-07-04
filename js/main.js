@@ -1,7 +1,7 @@
 WIDTH = 640;
 HEIGHT = 480;
-X_LINES = 14;
-Y_LINES = 14;
+X_LINES = 13;
+Y_LINES = 13;
 BOARD_OFFSET_X = 30;
 BOARD_OFFSET_Y = 30;
 BOARD_WIDTH = 400;
@@ -17,16 +17,22 @@ BOARD = [];
 *
 */
 
+BACKUP=[];
+BACKUP_COUNT=0;
+
+
 function main(){
   init();
 
-    window.onclick = function(e){
-      var cx = Math.floor(e.clientX/BOARD_UNIT) ;
-      var cy = Math.floor(e.clientY/BOARD_UNIT) ;
+  window.onclick = function(e){
+    var cx = Math.floor((e.clientX-BOARD_OFFSET_X)/BOARD_UNIT);
+    var cy = Math.floor((e.clientY-BOARD_OFFSET_Y)/BOARD_UNIT);
+    if(cx<X_LINES && cy<Y_LINES){
       if (setStone(cx,cy,IS_WHITE_TURN)) {
         IS_WHITE_TURN = !IS_WHITE_TURN;
       }
     }
+  }
 }
 
 function init(){
@@ -34,21 +40,8 @@ function init(){
   cvs.width = WIDTH;
   cvs.height = HEIGHT;
   ctx = cvs.getContext('2d');
+  ctx.translate(BOARD_OFFSET_X,BOARD_OFFSET_Y);
   initBoard();
-}
-
-function initBoard() {
-  ctx.clearRect(0,0,WIDTH,HEIGHT);
-  ctx.beginPath();
-  for(var i = 0; i<= Y_LINES; i++){
-    ctx.moveTo(BOARD_OFFSET_X+i*BOARD_UNIT,BOARD_OFFSET_Y+0);
-    ctx.lineTo(BOARD_OFFSET_X+i*BOARD_UNIT,BOARD_OFFSET_Y+BOARD_HEIGHT);
-  }
-  for(var i = 0; i<= X_LINES; i++){
-    ctx.moveTo(BOARD_OFFSET_X,BOARD_OFFSET_Y+i*BOARD_UNIT);
-    ctx.lineTo(BOARD_OFFSET_X+BOARD_WIDTH,BOARD_OFFSET_Y+i*BOARD_UNIT);
-  }
-  ctx.stroke();
 
   for(var y = 0; y < Y_LINES; y++){
     var r = [];
@@ -59,12 +52,29 @@ function initBoard() {
   }
 }
 
+function initBoard() {
+  ctx.clearRect(-BOARD_OFFSET_X,-BOARD_OFFSET_Y,WIDTH,HEIGHT);
+  ctx.beginPath();
+  
+  for(var i = 0; i< Y_LINES; i++){
+    ctx.moveTo(i*BOARD_UNIT,0);
+    ctx.lineTo(i*BOARD_UNIT, BOARD_HEIGHT-BOARD_UNIT);
+  }
+  for(var i = 0; i< X_LINES; i++){
+    ctx.moveTo(0,i*BOARD_UNIT);
+    ctx.lineTo(BOARD_WIDTH - BOARD_UNIT,i*BOARD_UNIT);
+  }
+  ctx.stroke();
+}
+
 function setStone(x,y,isWhite){
+  console.log(x,y);
   if(!IS_GAME_END){
     if(BOARD[y][x] == 0 ){
       BOARD[y][x] = isWhite ? 1 : -1;
       drawStone(x,y,isWhite);
       check(x,y);
+      backUp(x,y);
       return true;
     } else {
       console.log("there is the stone");
@@ -75,7 +85,7 @@ function setStone(x,y,isWhite){
 
 function drawStone(x,y,isWhite) {
   ctx.beginPath();
-  ctx.arc(30+BOARD_UNIT*(x-1),30+BOARD_UNIT*(y-1),10,Math.PI*2,false);
+  ctx.arc(BOARD_UNIT*x,BOARD_UNIT*y,10,Math.PI*2,false);
   ctx.stroke();
   if(isWhite){
     ctx.fillStyle = "white";
@@ -98,7 +108,7 @@ function checkStone(x,y,stepX,stepY){
       nX = x + stepX,
       nY = y + stepY;
 
-  while(BOARD[nY][nX] == BOARD[y][x]){
+  while(nY != Y_LINES && BOARD[nY][nX] == BOARD[y][x]){
     nX += stepX;
     nY += stepY;
     stoneCount++;
@@ -107,7 +117,7 @@ function checkStone(x,y,stepX,stepY){
   nX = x - stepX;
   nY = y - stepY;
 
-  while(BOARD[nY][nX] == BOARD[y][x]){
+  while(nY != -1 && BOARD[nY][nX] == BOARD[y][x]){
     nX -= stepX;
     nY -= stepY;
     stoneCount++;
@@ -116,5 +126,45 @@ function checkStone(x,y,stepX,stepY){
   if (stoneCount>=5){
     alert("win");
     IS_GAME_END = true;
+  }
+}
+
+function newGame(){
+  BOARD.length = 0;
+  BACKUP.length = 0;
+  BACKUP_COUNT = 0;
+  init();
+  IS_WHITE_TURN=true;
+  IS_GAME_END=false;
+
+}
+
+function backUp(x,y){
+  var r=[];
+  r.push(x,y);
+  BACKUP.push(r);
+  BACKUP_COUNT++;
+}
+
+function back(){
+  if(BACKUP_COUNT > 0){
+    BACKUP_COUNT--;
+    var x = BACKUP[BACKUP_COUNT][0],
+        y = BACKUP[BACKUP_COUNT][1];
+    BOARD[y][x] = 0;
+    BACKUP.pop();
+    IS_GAME_END = false;
+    initBoard();
+
+    for(var i =0; i<BACKUP_COUNT; i++){
+      var x = BACKUP[i][0];
+      var y = BACKUP[i][1];
+
+     if(BOARD[y][x] == 1){
+        drawStone(x,y,true);
+      } else {
+        drawStone(x,y,false);
+      } 
+    }
   }
 }
